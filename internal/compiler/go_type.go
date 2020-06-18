@@ -103,7 +103,7 @@ func (r *Result) postgresType(col *Column, settings config.CombinedSettings) str
 		}
 		return "sql.NullString"
 
-	case "bool", "pg_catalog.bool":
+	case "boolean", "bool", "pg_catalog.bool":
 		if notNull {
 			return "bool"
 		}
