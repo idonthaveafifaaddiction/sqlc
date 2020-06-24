@@ -11,7 +11,7 @@ import (
 	"github.com/kyleconroy/sqlc/internal/codegen"
 	"github.com/kyleconroy/sqlc/internal/codegen/golang"
 	"github.com/kyleconroy/sqlc/internal/config"
-	core "github.com/kyleconroy/sqlc/internal/pg"
+	"github.com/kyleconroy/sqlc/internal/core"
 )
 
 type PackageGenerator struct {
@@ -30,7 +30,7 @@ func (r *Result) Enums(settings config.CombinedSettings) []golang.Enum {
 	var enums []golang.Enum
 	for _, table := range r.Schema.tables {
 		for _, col := range table {
-			if col.Type.Type == "enum" {
+			if strings.ToLower(col.Type.Type) == "enum" {
 				constants := []golang.Constant{}
 				enumName := r.enumNameFromColDef(col)
 				for _, c := range col.Type.EnumValues {
@@ -227,7 +227,7 @@ func (r *Result) columnsToStruct(name string, items []structParams, settings con
 }
 
 func (pGen PackageGenerator) goTypeCol(col Column) string {
-	mySQLType := col.ColumnDefinition.Type.Type
+	mySQLType := strings.ToLower(col.ColumnDefinition.Type.Type)
 	notNull := bool(col.Type.NotNull)
 	colName := col.Name.String()
 

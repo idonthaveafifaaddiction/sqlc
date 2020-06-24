@@ -46,7 +46,7 @@ var versionCmd = &cobra.Command{
 		if version == "" {
 			// When no version is set, return the next bug fix version
 			// after the most recent tag
-			fmt.Printf("%s\n", "v1.3.1-devel")
+			fmt.Printf("%s\n", "v1.4.1-devel")
 		} else {
 			fmt.Printf("%s\n", version)
 		}
@@ -69,13 +69,10 @@ var initCmd = &cobra.Command{
 }
 
 type Env struct {
-	ExperimentalParser bool
 }
 
 func ParseEnv() Env {
-	return Env{
-		ExperimentalParser: os.Getenv("SQLC_EXPERIMENTAL_PARSER") != "off",
-	}
+	return Env{}
 }
 
 var genCmd = &cobra.Command{
