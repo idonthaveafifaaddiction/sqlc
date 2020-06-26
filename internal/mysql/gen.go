@@ -117,6 +117,22 @@ func (r *Result) GoQueries(settings config.CombinedSettings) []golang.Query {
 			// Comments:     query.Comments,
 		}
 
+		for i := range query.Params {
+			qp := query.Params[i]
+			if qp.Typ == "" {
+				func(ps []*Param) {
+					for j := range ps {
+						if ps[j].OriginalName == qp.OriginalName &&
+							ps[j].Typ != "" {
+							query.Params[i].Typ = ps[j].Typ
+						}
+					}
+				}(query.Params)
+
+			}
+
+		}
+
 		if len(query.Params) == 1 {
 			p := query.Params[0]
 			gq.Arg = golang.QueryValue{
