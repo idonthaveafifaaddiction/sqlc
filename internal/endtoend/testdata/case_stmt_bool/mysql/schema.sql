@@ -1,0 +1,3 @@
+CREATE TABLE users (
+    id integer NOT NULL AUTO_INCREMENT PRIMARY KEY
+) ENGINE=InnoDB;
