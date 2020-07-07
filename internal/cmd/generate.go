@@ -14,6 +14,7 @@ import (
 	"github.com/kyleconroy/sqlc/internal/codegen/kotlin"
 	"github.com/kyleconroy/sqlc/internal/compiler"
 	"github.com/kyleconroy/sqlc/internal/config"
+	"github.com/kyleconroy/sqlc/internal/debug"
 	"github.com/kyleconroy/sqlc/internal/multierr"
 	"github.com/kyleconroy/sqlc/internal/mysql"
 	"github.com/kyleconroy/sqlc/internal/opts"
@@ -91,6 +92,12 @@ func Generate(e Env, dir string, stderr io.Writer) (map[string]string, error) {
 		return nil, err
 	}
 
+	debug, err := opts.DebugFromEnv()
+	if err != nil {
+		fmt.Fprintf(stderr, "error parsing SQLCDEBUG: %s\n", err)
+		return nil, err
+	}
+
 	output := map[string]string{}
 	errored := false
 
@@ -127,7 +134,9 @@ func Generate(e Env, dir string, stderr io.Writer) (map[string]string, error) {
 		sql.Queries = joined
 
 		var name string
-		parseOpts := opts.Parser{}
+		parseOpts := opts.Parser{
+			Debug: debug,
+		}
 		if sql.Gen.Go != nil {
 			name = combo.Go.Package
 		} else if sql.Gen.Kotlin != nil {
@@ -210,6 +219,9 @@ func parse(e Env, name, dir string, sql config.SQL, combo config.CombinedSetting
 			fmt.Fprintf(stderr, "error parsing schema: %s\n", err)
 		}
 		return nil, true
+	}
+	if parserOpts.Debug.DumpCatalog {
+		debug.Dump(eng.Catalog())
 	}
 	if err := eng.ParseQueries(sql.Queries, parserOpts); err != nil {
 		fmt.Fprintf(stderr, "# package %s\n", name)
